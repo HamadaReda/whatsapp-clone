@@ -23,9 +23,9 @@ import static jakarta.persistence.GenerationType.UUID;
 @Entity
 @Table(name = "chat")
 @NamedQuery(name = ChatConstants.FIND_CHAT_BY_CURRENT_USER_ID,
-            query = "SELECT DISTINCT c FROM Chat c WHERE c.sender.id = :currentUserId OR c.recipient.id = :currentUserId ORDER BY c.createdDate DESC")
+            query = "SELECT c FROM Chat c WHERE c.sender.id = :currentUserId OR c.recipient.id = :currentUserId ORDER BY c.createdDate DESC")
 @NamedQuery(name = ChatConstants.FIND_CHAT_BY_SENDER_ID_AND_RECEIVER_ID,
-            query = "SELECT DISTINCT c FROM Chat c WHERE (c.sender.id = :senderId AND c.recipient.id = :receiverId) OR (c.sender.id = :receiverId AND c.recipient.id = :senderId)")
+            query = "SELECT c FROM Chat c WHERE (c.sender.id = :senderId AND c.recipient.id = :receiverId) OR (c.sender.id = :receiverId AND c.recipient.id = :senderId)")
 public class Chat extends BaseAuditingEntity {
 
     @Id
@@ -40,14 +40,14 @@ public class Chat extends BaseAuditingEntity {
     @JoinColumn(name = "recipient_id")
     private User recipient;
 
-    @OneToMany(mappedBy = "chat", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "chat", fetch = FetchType.LAZY)
     @OrderBy("createdDate DESC")
     private List<Message> messages;
 
     @Transient
     public String getChatName(final String currentUserId) {
-        if (recipient.getId().equals(currentUserId)) {
-            return recipient.getFirstName() + " " + recipient.getLastName();
+        if (sender.getId().equals(currentUserId)) {
+            return sender.getFirstName() + " " + sender.getLastName();
         }
         return recipient.getFirstName() + " " + recipient.getLastName();
     }

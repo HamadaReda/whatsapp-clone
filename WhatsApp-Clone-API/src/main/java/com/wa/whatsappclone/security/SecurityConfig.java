@@ -1,5 +1,8 @@
 package com.wa.whatsappclone.security;
 
+import com.wa.whatsappclone.interceptor.UserSynchronizerFilter;
+import com.wa.whatsappclone.user.UserSynchronizer;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
@@ -8,6 +11,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -18,7 +22,15 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final UserSynchronizer userSynchronizer;
+
+    @Bean
+    public UserSynchronizerFilter userSynchronizerFilter(){
+        return new UserSynchronizerFilter(userSynchronizer);
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -46,6 +58,8 @@ public class SecurityConfig {
                         token.jwtAuthenticationConverter(new KeycloakJwtAuthenticationConverter())
                     )
                 )
+                .addFilterAfter(userSynchronizerFilter(),
+                        BearerTokenAuthenticationFilter.class)
                 .build();
     }
 
@@ -71,5 +85,7 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/**", config);
         return source;
     }
+
+
 
 }
