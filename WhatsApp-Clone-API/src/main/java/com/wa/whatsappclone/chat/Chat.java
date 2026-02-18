@@ -23,9 +23,9 @@ import static jakarta.persistence.GenerationType.UUID;
 @Entity
 @Table(name = "chat")
 @NamedQuery(name = ChatConstants.FIND_CHAT_BY_CURRENT_USER_ID,
-            query = "SELECT DISTINCT c FROM Chat c WHERE c.sender.id = :currentUserId OR c.recipient.id = :currentUserId ORDER BY c.createdDate DESC")
+            query = "SELECT c FROM Chat c WHERE c.sender.id = :currentUserId OR c.recipient.id = :currentUserId ORDER BY c.createdDate DESC")
 @NamedQuery(name = ChatConstants.FIND_CHAT_BY_SENDER_ID_AND_RECEIVER_ID,
-            query = "SELECT DISTINCT c FROM Chat c WHERE (c.sender.id = :senderId AND c.recipient.id = :receiverId) OR (c.sender.id = :receiverId AND c.recipient.id = :senderId)")
+            query = "SELECT c FROM Chat c WHERE (c.sender.id = :senderId AND c.recipient.id = :receiverId) OR (c.sender.id = :receiverId AND c.recipient.id = :senderId)")
 public class Chat extends BaseAuditingEntity {
 
     @Id
@@ -40,43 +40,51 @@ public class Chat extends BaseAuditingEntity {
     @JoinColumn(name = "recipient_id")
     private User recipient;
 
-    @OneToMany(mappedBy = "chat", fetch = FetchType.EAGER)
-    @OrderBy("createdDate DESC")
-    private List<Message> messages;
+//    @OneToMany(mappedBy = "chat", fetch = FetchType.LAZY)
+//    @OrderBy("createdDate DESC")
+//    private List<Message> messages;
+
+//    @Transient
+//    public String getChatName(final String currentUserId) {
+//        if (sender.getId().equals(currentUserId)) {
+//            return sender.getFirstName() + " " + sender.getLastName();
+//        }
+//        return recipient.getFirstName() + " " + recipient.getLastName();
+//    }
 
     @Transient
-    public String getChatName(final String currentUserId) {
-        if (recipient.getId().equals(currentUserId)) {
-            return recipient.getFirstName() + " " + recipient.getLastName();
+    public User getOtherUser(final String currentUserId) {
+        if (sender.getId().equals(currentUserId)) {
+            return recipient;
         }
-        return recipient.getFirstName() + " " + recipient.getLastName();
+        return sender;
     }
 
-    @Transient
-    public Long getUnreadMessageCount(final String currentUserId) {
-        return messages
-                .stream()
-                .filter(m -> m.getReceiverId().equals(currentUserId))
-                .filter(m -> m.getState() == MessageState.SENT)
-                .count();
-    }
+//    @Transient
+//    public Long getUnreadMessageCount(final String currentUserId) {
+//        return messages
+//                .stream()
+//                .filter(m -> m.getReceiverId().equals(currentUserId))
+//                .filter(m -> m.getState() == MessageState.SENT)
+//                .count();
+//    }
 
-    @Transient
-    public String getLastMessage(){
-        if (messages != null && !messages.isEmpty()) {
-            if(messages.getFirst().getType() != MessageType.TEXT){
-                return "Attachment";
-            }
-            return messages.getFirst().getContent();
-        }
-        return null;
-    }
+//    @Transient
+//    public String getLastMessage(){
+//        if (messages != null && !messages.isEmpty()) {
+//            if(messages.getFirst().getType() != MessageType.TEXT){
+//                return "Attachment";
+//            }
+//            return messages.getFirst().getContent();
+//        }
+//        return null;
+//    }
 
-    @Transient
-    public LocalDateTime getLastMessageTime(){
-        if (messages != null && !messages.isEmpty()) {
-            return messages.getFirst().getCreatedDate();
-        }
-        return null;
-    }
+//    @Transient
+//    public LocalDateTime getLastMessageTime(){
+//        if (messages != null && !messages.isEmpty()) {
+//            return messages.getFirst().getCreatedDate();
+//        }
+//        return null;
+//    }
 }
