@@ -8,16 +8,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @Table(name = "messages")
-@NamedQuery(name = MessageConstants.FIND_MESSAGES_BY_CHAT_ID,
-            query = "SELECT m FROM Message m WHERE m.chat.id = :chatId ORDER BY m.createdDate")
-@NamedQuery(name = MessageConstants.SET_MESSAGES_TO_SEEN_BY_CHAT,
-            query = "UPDATE Message SET state = :newState WHERE chat.id = :chatId")
+
 public class Message extends BaseAuditingEntity {
 
     @Id
@@ -43,4 +42,9 @@ public class Message extends BaseAuditingEntity {
 
     @Column(name = "receiver_id", nullable = false)
     private String receiverId;
+
+    @Column(name = "seen_at")
+    private LocalDateTime seenAt;
+
+    private String mediaFilePath;
 }

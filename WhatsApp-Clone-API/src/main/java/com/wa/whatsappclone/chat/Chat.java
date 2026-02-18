@@ -40,9 +40,9 @@ public class Chat extends BaseAuditingEntity {
     @JoinColumn(name = "recipient_id")
     private User recipient;
 
-    @OneToMany(mappedBy = "chat", fetch = FetchType.LAZY)
-    @OrderBy("createdDate DESC")
-    private List<Message> messages;
+//    @OneToMany(mappedBy = "chat", fetch = FetchType.LAZY)
+//    @OrderBy("createdDate DESC")
+//    private List<Message> messages;
 
 //    @Transient
 //    public String getChatName(final String currentUserId) {
@@ -60,31 +60,31 @@ public class Chat extends BaseAuditingEntity {
         return sender;
     }
 
-    @Transient
-    public Long getUnreadMessageCount(final String currentUserId) {
-        return messages
-                .stream()
-                .filter(m -> m.getReceiverId().equals(currentUserId))
-                .filter(m -> m.getState() == MessageState.SENT)
-                .count();
-    }
+//    @Transient
+//    public Long getUnreadMessageCount(final String currentUserId) {
+//        return messages
+//                .stream()
+//                .filter(m -> m.getReceiverId().equals(currentUserId))
+//                .filter(m -> m.getState() == MessageState.SENT)
+//                .count();
+//    }
 
-    @Transient
-    public String getLastMessage(){
-        if (messages != null && !messages.isEmpty()) {
-            if(messages.getFirst().getType() != MessageType.TEXT){
-                return "Attachment";
-            }
-            return messages.getFirst().getContent();
-        }
-        return null;
-    }
+//    @Transient
+//    public String getLastMessage(){
+//        if (messages != null && !messages.isEmpty()) {
+//            if(messages.getFirst().getType() != MessageType.TEXT){
+//                return "Attachment";
+//            }
+//            return messages.getFirst().getContent();
+//        }
+//        return null;
+//    }
 
-    @Transient
-    public LocalDateTime getLastMessageTime(){
-        if (messages != null && !messages.isEmpty()) {
-            return messages.getFirst().getCreatedDate();
-        }
-        return null;
-    }
+//    @Transient
+//    public LocalDateTime getLastMessageTime(){
+//        if (messages != null && !messages.isEmpty()) {
+//            return messages.getFirst().getCreatedDate();
+//        }
+//        return null;
+//    }
 }

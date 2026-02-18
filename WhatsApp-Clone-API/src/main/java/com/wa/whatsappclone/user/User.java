@@ -46,11 +46,11 @@ public class User extends BaseAuditingEntity {
 
     private LocalDateTime lastSeen;
 
-    @OneToMany(mappedBy = "sender")
-    private List<Chat> chatsAsSender;
-
-    @OneToMany(mappedBy = "recipient")
-    private List<Chat> chatsAsRecipient;
+//    @OneToMany(mappedBy = "sender")
+//    private List<Chat> chatsAsSender;   // the best: delete it and focus on query
+//
+//    @OneToMany(mappedBy = "recipient")
+//    private List<Chat> chatsAsRecipient;// the best: delete it and focus on query
 
     public String getFullName() {
         return firstName + " " + lastName;
