@@ -1,18 +1,17 @@
 package com.wa.whatsappclone.user;
 
-import com.wa.whatsappclone.chat.Chat;
 import com.wa.whatsappclone.common.BaseAuditingEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
+@SuperBuilder
 @Entity
 @Table(name = "users",
         uniqueConstraints = {
@@ -24,7 +23,7 @@ import java.util.List;
 @NamedQuery(name = UserConstants.FIND_USER_BY_EMAIL,
             query = "SELECT u FROM User u WHERE u.email = :email")
 @NamedQuery(name = UserConstants.FIND_ALL_USERS_EXCEPT_SELF,
-            query = "SELECT u FROM User u WHERE u.id != :publicId")
+            query = "SELECT u FROM User u WHERE u.keycloakId != :keycloakId")
 //@NamedQuery(name = UserConstants.FIND_USER_BY_PUBLIC_ID,
 //            query = "SELECT u FROM User u WHERE u.id = :publicId")
 public class User extends BaseAuditingEntity {

@@ -1,11 +1,13 @@
 package com.wa.whatsappclone.chat;
 
+import com.wa.whatsappclone.exception.ChatNotFoundException;
 import com.wa.whatsappclone.exception.SelfChatNotAllowedException;
 import com.wa.whatsappclone.exception.UserNotFoundException;
 import com.wa.whatsappclone.message.MessageRepository;
 import com.wa.whatsappclone.message.MessageType;
 import com.wa.whatsappclone.user.User;
 import com.wa.whatsappclone.user.UserRepository;
+import com.wa.whatsappclone.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -22,7 +24,7 @@ import java.util.stream.Collectors;
 public class ChatService {
 
     private final ChatRepository chatRepository;
-    private final UserRepository userRepository;
+    private final UserService userService;
     private final ChatMapper chatMapper;
     private final MessageRepository messageRepository;
 
@@ -32,11 +34,9 @@ public class ChatService {
     ) {}
 
     public List<ChatResponse> getChatsForCurrentUser(Authentication authentication) {
-        String keycloakId = authentication.getName();
-        String userId = userRepository
-                .findByKeycloakId(keycloakId)
-                .orElseThrow(() -> new UserNotFoundException(keycloakId))
-                .getId();
+        User currentUser = userService.getCurrentUser(authentication.getName());
+        String userId = currentUser.getId();
+
 
         List<Chat> chats = chatRepository.findAllByUserId(userId);
 
@@ -55,13 +55,9 @@ public class ChatService {
     }
 
     public String createChat(String senderKeycloakId, String receiverKeycloakId) {
-        User sender = userRepository.findByKeycloakId(senderKeycloakId)
-                .orElseThrow(() ->
-                        new UserNotFoundException(senderKeycloakId));
+        User sender = userService.getCurrentUser(senderKeycloakId);
 
-        User recipient = userRepository.findByKeycloakId(receiverKeycloakId)
-                .orElseThrow(() ->
-                        new UserNotFoundException(receiverKeycloakId));
+        User recipient = userService.getCurrentUser(receiverKeycloakId);
 
         if (sender.getId().equals(recipient.getId())) {
             throw new SelfChatNotAllowedException();
@@ -93,6 +89,11 @@ public class ChatService {
     public long getUnreadMessagesCount(String chatId, String currentUserId) {
         return messageRepository
                 .countUnreadMessages(chatId, currentUserId);
+    }
+
+    public Chat getChat(String chatId) {
+        return chatRepository.findById(chatId)
+                .orElseThrow(() -> new ChatNotFoundException(chatId));
     }
 
 //    public Optional<ChatResponse> getChatBetweenUsers(String currentUserId, String otherUserId) {
