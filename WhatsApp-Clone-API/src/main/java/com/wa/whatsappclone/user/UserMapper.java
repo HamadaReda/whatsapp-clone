@@ -42,4 +42,16 @@ public class UserMapper {
         return token.getClaimAsString("nickname");
     }
 
+    public UserResponse toUserResponse(User user) {
+        return UserResponse.builder()
+                .id(user.getId())
+                .keycloakId(user.getKeycloakId())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .email(user.getEmail())
+                .lastSeen(user.getLastSeen())
+                .isOnline(user.isUserOnline())
+                .build();
+    }
+
 }

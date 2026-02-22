@@ -5,9 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
-import java.util.Optional;
-
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -24,7 +21,7 @@ public class UserSynchronizer {
             return;
         }
 
-        userRepository.findById(keycloakId).ifPresentOrElse(
+        userRepository.findByKeycloakId(keycloakId).ifPresentOrElse(
                 existing -> updateExistingUser(existing, token),
                 () -> createNewUser(token)
         );
