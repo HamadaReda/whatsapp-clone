@@ -21,6 +21,10 @@ public class UserService {
                 .toList();
     }
 
+    public UserResponse findUserByKeycloakId(String keycloakId) {
+        return userMapper.toUserResponse(getCurrentUser(keycloakId));
+    }
+
     public User getCurrentUser(String keycloakId) {
         return userRepository.findByKeycloakId(keycloakId)
                 .orElseThrow(() -> new UserNotFoundException(keycloakId));
