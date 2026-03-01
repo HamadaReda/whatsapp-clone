@@ -96,6 +96,7 @@ public class MessageService {
 
     @Transactional
     public void markMessagesAsRead(String chatId, Authentication authentication) {
+
         Chat chat = chatService.getChat(chatId);
         User currentUser = userService.getCurrentUser(authentication.getName());
         User otherUser   = chat.getOtherUser(currentUser.getId());

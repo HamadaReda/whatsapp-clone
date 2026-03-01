@@ -28,7 +28,7 @@ public class ChatService {
     private final ChatMapper chatMapper;
     private final MessageRepository messageRepository;
 
-    private static record LastMessageInfo(
+    private record LastMessageInfo(
             String content,
             LocalDateTime date
     ) {}
@@ -54,6 +54,7 @@ public class ChatService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public String createChat(String senderKeycloakId, String receiverKeycloakId) {
         User sender = userService.getCurrentUser(senderKeycloakId);
 
