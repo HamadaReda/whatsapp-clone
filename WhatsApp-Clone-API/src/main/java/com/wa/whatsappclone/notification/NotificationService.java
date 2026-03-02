@@ -12,10 +12,10 @@ public class NotificationService {
 
     private final SimpMessagingTemplate messagingTemplate;
 
-    public void sendNotification(String userId, Notification notification) {
-        log.info("Sending WS notification to {} with payload {}", userId, notification);
+    public void sendNotification(String userKeycloakId, Notification notification) {
+        log.info("Sending WS notification to {} with payload {}", userKeycloakId, notification);
         messagingTemplate.convertAndSendToUser(
-                userId,
+                userKeycloakId,
                 "/chat",
                 notification
         );

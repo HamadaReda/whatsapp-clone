@@ -35,7 +35,8 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
         SET m.state = com.wa.whatsappclone.message.MessageState.SEEN,
             m.seenAt = CURRENT_TIMESTAMP
         WHERE m.chat.id =:chatId
+            AND m.senderId = :otherUserId
             AND m.state = com.wa.whatsappclone.message.MessageState.SENT
     """)
-    int markMessagesAsRead(String chatId, String userId);
+    int markMessagesAsRead(String chatId, String otherUserId);
 }

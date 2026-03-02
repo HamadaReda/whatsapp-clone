@@ -55,7 +55,7 @@ public class MessageService {
                 .messageType(messageRequest.getType())
                 .type(NotificationType.MESSAGE)
                 .build();
-        notificationService.sendNotification(receiver.getId(), notification);
+        notificationService.sendNotification(receiver.getKeycloakId(), notification);
     }
 
     public Slice<MessageResponse> getChatMessagesSlice(
@@ -85,13 +85,13 @@ public class MessageService {
         messageRepository.save(message);
         Notification notification = Notification.builder()
                 .chatId(chat.getId())
-                .senderId(currentUserId)
-                .receiverId(otherUserId)
+                .senderId(currentUser.getId())
+                .receiverId(otherUser.getId())
                 .messageType(MessageType.IMAGE)
                 .type(NotificationType.IMAGE)
                 .media(FileUtils.readFileFromLocation(filePath))
                 .build();
-        notificationService.sendNotification(otherUserId, notification);
+        notificationService.sendNotification(otherUser.getKeycloakId(), notification);
     }
 
     @Transactional
@@ -100,14 +100,14 @@ public class MessageService {
         Chat chat = chatService.getChat(chatId);
         User currentUser = userService.getCurrentUser(authentication.getName());
         User otherUser   = chat.getOtherUser(currentUser.getId());
-        messageRepository.markMessagesAsRead(chatId, currentUser.getId());
+        messageRepository.markMessagesAsRead(chatId, otherUser.getId());
         Notification notification = Notification.builder()
                 .chatId(chat.getId())
                 .senderId(currentUser.getId())
                 .receiverId(otherUser.getId())
                 .type(NotificationType.SEEN)
                 .build();
-        notificationService.sendNotification(otherUser.getId(), notification);
+        notificationService.sendNotification(otherUser.getKeycloakId(), notification);
     }
 
 
