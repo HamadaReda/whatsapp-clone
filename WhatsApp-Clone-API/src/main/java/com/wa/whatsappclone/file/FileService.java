@@ -67,6 +67,6 @@ public class FileService {
         if (lastDotIndex == -1) {
             return "";
         }
-        return originalFilename.substring(lastDotIndex + 1).toLowerCase();
+        return originalFilename.substring(lastDotIndex).toLowerCase();
     }
 }

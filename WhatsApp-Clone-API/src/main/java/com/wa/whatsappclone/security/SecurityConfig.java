@@ -1,8 +1,9 @@
 package com.wa.whatsappclone.security;
 
-import com.wa.whatsappclone.interceptor.UserSynchronizerFilter;
+//import com.wa.whatsappclone.interceptor.UserSynchronizerFilter;
 import com.wa.whatsappclone.user.UserSynchronizer;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
@@ -25,12 +26,15 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
+    @Value("${frontend.url}")
+    private String frontendUrl;
+
     private final UserSynchronizer userSynchronizer;
 
-    @Bean
-    public UserSynchronizerFilter userSynchronizerFilter(){
-        return new UserSynchronizerFilter(userSynchronizer);
-    }
+//    @Bean
+//    public UserSynchronizerFilter userSynchronizerFilter(){
+//        return new UserSynchronizerFilter(userSynchronizer);
+//    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -58,8 +62,8 @@ public class SecurityConfig {
                         token.jwtAuthenticationConverter(new KeycloakJwtAuthenticationConverter())
                     )
                 )
-                .addFilterAfter(userSynchronizerFilter(),
-                        BearerTokenAuthenticationFilter.class)
+//                .addFilterAfter(userSynchronizerFilter(),
+//                        BearerTokenAuthenticationFilter.class)
                 .build();
     }
 
@@ -68,7 +72,7 @@ public class SecurityConfig {
         final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.setAllowedOrigins(Collections.singletonList("http://localhost:4200"));
+        config.setAllowedOrigins(Collections.singletonList(frontendUrl));
         config.setAllowedHeaders(List.of(
                 HttpHeaders.ORIGIN,
                 HttpHeaders.CONTENT_TYPE,

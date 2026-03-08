@@ -17,32 +17,94 @@ public class KeycloakJwtAuthenticationConverter implements Converter<Jwt, Abstra
 
     @Override
     public AbstractAuthenticationToken convert(@NotNull Jwt source) {
-        return new JwtAuthenticationToken(source,
-                Stream.concat(
-                        new JwtGrantedAuthoritiesConverter().convert(source).stream(),
-                        extractResourceRoles(source).stream()
+        Set<GrantedAuthority> authorities = Stream.of(
+                        extractScopeAuthorities(source),
+                        extractRealmRoles(source),
+                        extractResourceRoles(source),
+                        extractAccountRoles(source)
                 )
-                        .collect(Collectors.toSet())
-        );
+                .flatMap(Collection::stream)
+                .collect(Collectors.toSet());
+
+        return new JwtAuthenticationToken(source, authorities);
     }
 
-    private Collection<? extends GrantedAuthority> extractResourceRoles(@NotNull Jwt source) {
-        Map<String, Object> resourceAccess = source.getClaim("resource_access");
-        if(resourceAccess == null) {
-            return Set.of();
-        }
-        Map<String, Object> account = (Map<String, Object>)resourceAccess.get("account");
-        if(account == null) {
-            return Set.of();
-        }
-        List<String> roles = (List<String>)account.get("roles");
-        if(roles == null) {
-            return Set.of();
-        }
-        return roles.stream().map(role ->
-                new SimpleGrantedAuthority("ROLE_" + role.replace("-", "_")))
-                    .collect(Collectors.toSet()
-        );
+    private Collection<? extends GrantedAuthority> extractScopeAuthorities(Jwt source) {
+
+        JwtGrantedAuthoritiesConverter converter = new JwtGrantedAuthoritiesConverter();
+
+        return converter.convert(source);
     }
+
+    private Collection<? extends GrantedAuthority> extractRealmRoles(Jwt source) {
+
+        Map<String, Object> realmAccess = source.getClaim("realm_access");
+
+        if (realmAccess == null) {
+            return Set.of();
+        }
+
+        List<String> roles = (List<String>) realmAccess.get("roles");
+
+        if (roles == null) {
+            return Set.of();
+        }
+
+        return roles.stream()
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.replace("-", "_")))
+                .collect(Collectors.toSet());
+    }
+
+    private Collection<? extends GrantedAuthority> extractResourceRoles(Jwt source) {
+
+        Map<String, Object> resourceAccess = source.getClaim("resource_access");
+
+        if (resourceAccess == null) {
+            return Set.of();
+        }
+
+        Map<String, Object> client = (Map<String, Object>) resourceAccess.get("whatsapp-clone-app");
+
+        if (client == null) {
+            return Set.of();
+        }
+
+        List<String> roles = (List<String>) client.get("roles");
+
+        if (roles == null) {
+            return Set.of();
+        }
+
+        return roles.stream()
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
+                .collect(Collectors.toSet());
+    }
+
+    private Collection<? extends GrantedAuthority> extractAccountRoles(Jwt source) {
+
+        Map<String, Object> resourceAccess = source.getClaim("resource_access");
+
+        if (resourceAccess == null) {
+            return Set.of();
+        }
+
+        Map<String, Object> account = (Map<String, Object>) resourceAccess.get("account");
+
+        if (account == null) {
+            return Set.of();
+        }
+
+        List<String> roles = (List<String>) account.get("roles");
+
+        if (roles == null) {
+            return Set.of();
+        }
+
+        return roles.stream()
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.replace("-", "_")))
+                .collect(Collectors.toSet());
+    }
+
+
 
 }

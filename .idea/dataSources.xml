@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="whatsapp_clone@localhost" uuid="a5b35ae3-f10e-4b72-a3f0-a3982cd98bf5">
+    <data-source source="LOCAL" name="whatsapp_clone@localhost" uuid="7b3d62ac-f2ac-4da9-bbd4-6a8cf28ccecc">
       <driver-ref>postgresql</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.postgresql.Driver</jdbc-driver>
